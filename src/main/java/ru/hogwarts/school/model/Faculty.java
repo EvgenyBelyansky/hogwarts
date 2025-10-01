@@ -1,14 +1,20 @@
 package ru.hogwarts.school.model;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
-@Data
-@RequiredArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 public class Faculty {
 
-    private final Long id;
-    private final String name;
-    private final String color;
+    private long id;
+    private String name;
+    private String color;
 
+    public Faculty(String name, String color) {
+        this.id = 1;
+        this.name = name;
+        this.color = color;
+    }
 }
