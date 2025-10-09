@@ -3,10 +3,12 @@ package ru.hogwarts.school.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.model.dto.StudentDto;
+import ru.hogwarts.school.model.entity.Student;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/student")
@@ -16,15 +18,15 @@ public class StudentController {
     private final StudentService studentService;
 
     @PostMapping("/add")
-    public ResponseEntity<Student> addStudent(@RequestBody Student student) {
+    public ResponseEntity<Student> addStudent(@RequestBody StudentDto student) {
         studentService.addStudent(student);
-        return ResponseEntity.ok(student);
+        return null;
     }
 
     @DeleteMapping("/remove/{id}")
-    public ResponseEntity<Student> removeStudentById(@PathVariable long id) {
-        final Student student = studentService.removeStudentById(id);
-        return ResponseEntity.ok(student);
+    public Optional<Student> removeStudentById(@PathVariable long id) {
+        final Optional<Student> student = studentService.removeStudentById(id);
+        return student;
     }
 
     @GetMapping("/get")
@@ -34,9 +36,9 @@ public class StudentController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<Student> updateStudent(@RequestBody Student student) {
-        final Student updatedStudent = studentService.updateStudent(student);
-        return ResponseEntity.ok(updatedStudent);
+    public StudentDto updateStudent(@RequestBody Student student) {
+        final StudentDto updatedStudent = studentService.updateStudent(student);
+        return updatedStudent;
     }
 
     @GetMapping("/by-age")

@@ -4,9 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.hogwarts.school.exception.*;
-import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.model.entity.Student;
+import ru.hogwarts.school.model.repository.StudentRepository;
 import ru.hogwarts.school.service.StudentService;
 import ru.hogwarts.school.validation.InputValidator;
 
@@ -18,8 +21,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @ExtendWith(MockitoExtension.class)
 public class StudentServiceTest {
 
-    private StudentService studentService;
+    @Mock
+    private StudentRepository studentRepository;
     private InputValidator inputValidator;
+
+    @InjectMocks
+    private StudentService studentService;
+
 
     private Student student1;
     private Student student2;
@@ -101,7 +109,7 @@ public class StudentServiceTest {
         assertThat(testStudent).isNotSameAs(student2)
                 .isEqualTo(student2);
         assertThatThrownBy(() -> studentService.addStudent(testStudent))
-                .isInstanceOf(DuplicateObjectException.class);
+                .isInstanceOf(RepositoryContainsDuplicateObjectException.class);
     }
 
     @Test
@@ -126,7 +134,7 @@ public class StudentServiceTest {
         long testId = 5;
 
         assertThatThrownBy(() -> studentService.removeStudentById(testId))
-                .isInstanceOf(MapNotContainsObjectWithIdException.class);
+                .isInstanceOf(RepositoryNotContainsObjectWithIdException.class);
     }
 
     @Test
@@ -149,7 +157,7 @@ public class StudentServiceTest {
         long testId = 5;
 
         assertThatThrownBy(() -> studentService.findStudentById(testId))
-                .isInstanceOf(MapNotContainsObjectWithIdException.class);
+                .isInstanceOf(RepositoryNotContainsObjectWithIdException.class);
     }
 
     @Test

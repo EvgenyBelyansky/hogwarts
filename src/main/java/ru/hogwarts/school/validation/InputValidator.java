@@ -1,11 +1,13 @@
 package ru.hogwarts.school.validation;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.hogwarts.school.exception.*;
 
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class InputValidator {
 
     public void checkArgumentIsNull(Object object) {
@@ -35,18 +37,6 @@ public class InputValidator {
     public void checkObjectNumericFieldIsPositive(String fieldName, int fieldValue) {
         if (fieldValue <= 0) {
             throw new NumericFieldIsNotPositiveException(fieldName, fieldValue);
-        }
-    }
-
-    public void checkMapContainsRequestedKey(Map map, long id) {
-        if (!map.containsKey(id)) {
-            throw new MapNotContainsObjectWithIdException(id);
-        }
-    }
-
-    public void checkMapContainsDuplicateObject(Map map, Object object) {
-        if (map.containsValue(object)) {
-            throw new DuplicateObjectException(object);
         }
     }
 }

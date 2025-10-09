@@ -1,5 +1,9 @@
-package ru.hogwarts.school.model;
+package ru.hogwarts.school.model.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.*;
 
 import java.util.Objects;
@@ -8,14 +12,17 @@ import java.util.Objects;
 @Setter
 @ToString
 @NoArgsConstructor
+@Entity
 public class Student {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
     private int age;
 
+    @Builder
     public Student(String name, int age) {
-        this.id = 1;
         this.name = name;
         this.age = age;
     }

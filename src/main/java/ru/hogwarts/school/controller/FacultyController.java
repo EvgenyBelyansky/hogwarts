@@ -3,7 +3,7 @@ package ru.hogwarts.school.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.model.entity.Faculty;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.Map;
