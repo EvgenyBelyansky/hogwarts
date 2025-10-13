@@ -2,6 +2,8 @@ package ru.hogwarts.school.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.hogwarts.school.exception.RepositoryNotContainsObjectWithIdException;
+import ru.hogwarts.school.model.mappers.FacultyMapper;
 import ru.hogwarts.school.model.dto.FacultyDto;
 import ru.hogwarts.school.model.entity.Faculty;
 import ru.hogwarts.school.model.repository.FacultyRepository;
@@ -16,70 +18,56 @@ import java.util.stream.Collectors;
 public class FacultyService {
 
     private final FacultyRepository facultyRepository;
-
-    private InputValidator inputValidator;
     private RepositoryValidator repositoryValidator;
 
-    private long count = 1;
 
     public void addFaculty(FacultyDto facultyDto) {
-        inputValidator.checkArgumentIsNull(facultyDto);
-        inputValidator.checkObjectStringFieldIsBlank("name", facultyDto.getName(), facultyDto);
-        inputValidator.checkObjectStringFieldIsBlank("color", facultyDto.getColor(), facultyDto);
+        InputValidator.checkArgumentIsNull(facultyDto);
+        InputValidator.checkObjectStringFieldIsBlank("name", facultyDto.getName(), facultyDto);
+        InputValidator.checkObjectStringFieldIsBlank("color", facultyDto.getColor(), facultyDto);
         repositoryValidator.checkRepositoryContainsDuplicateObject(
                 facultyRepository,
+                Faculty.class,
                 facultyDto,
                 () -> facultyRepository.existsByNameAndColor(facultyDto.getName(), facultyDto.getColor())
         );
 
-        Faculty newFaculty = Faculty.builder()
-                .name(facultyDto.getName())
-                .color(facultyDto.getColor())
-                .build();
+        Faculty newFaculty = FacultyMapper.fromDtoToFacultyEntity(facultyDto);
 
         facultyRepository.save(newFaculty);
     }
 
-    public Faculty removeFacultyById(long id) {
-
-        final Faculty removedFaculty = findFacultyById(id);
-
+    public void removeFacultyById(long id) {
         facultyRepository.deleteById(id);
-        return removedFaculty;
     }
 
     public Faculty findFacultyById(long id) {
-        repositoryValidator.checkRepositoryContainsRequestedKey(facultyRepository, id);
-
-        final Faculty faculty = facultyRepository.findById(id).get();
-        return faculty;
+        return facultyRepository
+                .findById(id)
+                .orElseThrow(() -> new RepositoryNotContainsObjectWithIdException(id));
     }
 
-    public Faculty updateFaculty(Faculty faculty) {
-        inputValidator.checkArgumentIsNull(faculty);
-        repositoryValidator.checkRepositoryContainsRequestedKey(facultyRepository, faculty.getId());
-        inputValidator.checkObjectStringFieldIsBlank("name", faculty.getName(), faculty);
-        inputValidator.checkObjectStringFieldIsBlank("color", faculty.getColor(), faculty);
+    public void updateFaculty(long id, FacultyDto facultyDto) {
+        InputValidator.checkArgumentIsNull(facultyDto);
+        repositoryValidator.checkRepositoryContainsRequestedKey(facultyRepository, id);
+        InputValidator.checkObjectStringFieldIsBlank("name", facultyDto.getName(), facultyDto);
+        InputValidator.checkObjectStringFieldIsBlank("color", facultyDto.getColor(), facultyDto);
 
-        final Faculty updatedFaculty = facultyRepository.save(faculty);
-        faculty.setColor(faculty.getColor());
-        faculty.setName(faculty.getName());
-        return updatedFaculty;
+        final Faculty updatedFaculty = FacultyMapper.fromDtoToFacultyEntity(facultyDto);
+        facultyRepository.save(updatedFaculty);
     }
 
     public Map<Long, Faculty> getFiltredByColorFacultyMap(String color) {
-        inputValidator.checkObjectStringFieldIsBlank("color", color);
+        InputValidator.checkObjectStringFieldIsBlank("color", color);
 
-        final Map<Long, Faculty> facultyMap = facultyRepository.findAll().stream()
+        return facultyRepository.findAll().stream()
                 .filter(f -> f.getColor().equals(color))
                 .collect(Collectors.toUnmodifiableMap(Faculty::getId, f -> f));
-        return facultyMap;
     }
 
     public Map<Long, Faculty> getAllFaculty() {
 
-        final Map<Long, Faculty> facultyMap = facultyRepository.findAll().stream()
+        return facultyRepository.findAll().stream()
                 .collect(Collectors.toUnmodifiableMap(Faculty::getId, f -> f));
-        return facultyMap;
     }
 }

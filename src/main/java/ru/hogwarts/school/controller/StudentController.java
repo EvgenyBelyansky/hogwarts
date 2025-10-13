@@ -8,7 +8,6 @@ import ru.hogwarts.school.model.entity.Student;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/student")
@@ -18,15 +17,13 @@ public class StudentController {
     private final StudentService studentService;
 
     @PostMapping("/add")
-    public ResponseEntity<Student> addStudent(@RequestBody StudentDto student) {
+    public void addStudent(@RequestBody StudentDto student) {
         studentService.addStudent(student);
-        return null;
     }
 
     @DeleteMapping("/remove/{id}")
-    public Optional<Student> removeStudentById(@PathVariable long id) {
-        final Optional<Student> student = studentService.removeStudentById(id);
-        return student;
+    public void removeStudentById(@PathVariable long id) {
+        studentService.removeStudentById(id);
     }
 
     @GetMapping("/get")
@@ -36,21 +33,19 @@ public class StudentController {
     }
 
     @PatchMapping("/update")
-    public StudentDto updateStudent(@RequestBody Student student) {
-        final StudentDto updatedStudent = studentService.updateStudent(student);
-        return updatedStudent;
+    public StudentDto updateStudent(@RequestParam long id,
+                                    @RequestBody StudentDto studentDto) {
+        return studentService.updateStudent(id, studentDto);
     }
 
     @GetMapping("/by-age")
-    public ResponseEntity<Map<Long, Student>> getStudentsByAge(@RequestParam int age) {
-        final Map<Long, Student> filteredByAgeStudentMap = studentService.getFiltredByAgeStudentMap(age);
-        return ResponseEntity.ok(filteredByAgeStudentMap);
+    public Map<Long, Student> getStudentsByAge(@RequestParam int age) {
+        return studentService.getFiltredByAgeStudentMap(age);
     }
 
     @GetMapping("/by-name")
-    public ResponseEntity<Map<Long, Student>> getStudentsByName(@RequestParam String name) {
-        final Map<Long, Student> filteredByNameStudentMap = studentService.getFiltredByNameStudentMap(name);
-        return ResponseEntity.ok(filteredByNameStudentMap);
+    public Map<Long, Student> getStudentsByName(@RequestParam String name) {
+        return studentService.getFiltredByNameStudentMap(name);
     }
 
     @GetMapping("/get/all")

@@ -18,10 +18,11 @@ public class RepositoryValidator {
 
     public <T, O> void checkRepositoryContainsDuplicateObject(
             JpaRepository<T, Long> repository,
+            Class<T> entityClass,
             O object,
             BooleanSupplier duplicateChecker) {
         if (duplicateChecker.getAsBoolean()) {
-            throw new RepositoryContainsDuplicateObjectException(object);
+            throw new RepositoryContainsDuplicateObjectException(entityClass, object);
         }
     }
 }

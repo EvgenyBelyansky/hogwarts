@@ -1,30 +1,32 @@
 package ru.hogwarts.school.model.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+import ru.hogwarts.school.validation.InputValidator;
 
 import java.util.Objects;
 
 @Getter
-@Setter
 @ToString
 @NoArgsConstructor
 @Entity
+@Table(name = "student")
 public class Student {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "age")
     private int age;
 
     @Builder
     public Student(String name, int age) {
-        this.name = name;
-        this.age = age;
+        this.name = Objects.requireNonNull(name);
+        this.age = Objects.requireNonNull(age);
     }
 
     @Override
@@ -37,5 +39,19 @@ public class Student {
     @Override
     public int hashCode() {
         return Objects.hash(name, age);
+    }
+
+    public void setId(long id) {
+        this.id = Objects.requireNonNull(id);
+    }
+
+    public void setName(String name) {
+        InputValidator.checkObjectStringFieldIsBlank("name", name);
+        this.name = name;
+    }
+
+    public void setAge(int age) {
+        InputValidator.checkObjectNumericFieldIsPositive("age", age);
+        this.age = age;
     }
 }

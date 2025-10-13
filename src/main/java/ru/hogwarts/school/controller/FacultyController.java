@@ -3,6 +3,7 @@ package ru.hogwarts.school.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.hogwarts.school.model.dto.FacultyDto;
 import ru.hogwarts.school.model.entity.Faculty;
 import ru.hogwarts.school.service.FacultyService;
 
@@ -16,15 +17,13 @@ public class FacultyController {
     private final FacultyService facultyService;
 
     @PostMapping("/add")
-    public ResponseEntity<Faculty> addFaculty(@RequestBody Faculty faculty) {
-        facultyService.addFaculty(faculty);
-        return ResponseEntity.ok(faculty);
+    public void addFaculty(@RequestBody FacultyDto facultyDto) {
+        facultyService.addFaculty(facultyDto);
     }
 
     @DeleteMapping("/remove/{id}")
-    public ResponseEntity<Faculty> removeFacultyById(@PathVariable long id) {
-        final Faculty faculty = facultyService.removeFacultyById(id);
-        return ResponseEntity.ok(faculty);
+    public void removeFacultyById(@PathVariable long id) {
+        facultyService.removeFacultyById(id);
     }
 
     @GetMapping("/get/{id}")
@@ -34,15 +33,14 @@ public class FacultyController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<Faculty> updateFaculty(@RequestBody Faculty faculty) {
-        final Faculty updatedfaculty = facultyService.updateFaculty(faculty);
-        return ResponseEntity.ok(updatedfaculty);
+    public void updateFaculty(@RequestParam long id,
+                              @RequestBody FacultyDto facultyDto) {
+        facultyService.updateFaculty(id, facultyDto);
     }
 
     @GetMapping("/by-color")
-    public ResponseEntity<Map<Long, Faculty>> getFacultyByColor(String color) {
-        final Map<Long, Faculty> filtredByColorFacultyMap = facultyService.getFiltredByColorFacultyMap(color);
-        return ResponseEntity.ok(filtredByColorFacultyMap);
+    public Map<Long, Faculty> getFacultyByColor(String color) {
+        return facultyService.getFiltredByColorFacultyMap(color);
     }
 
     @GetMapping("/get/all")

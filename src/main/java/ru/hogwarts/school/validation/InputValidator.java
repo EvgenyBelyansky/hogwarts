@@ -1,40 +1,47 @@
 package ru.hogwarts.school.validation;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.hogwarts.school.exception.*;
+import ru.hogwarts.school.exception.ArgumentIsNullException;
+import ru.hogwarts.school.exception.HogwartsException;
+import ru.hogwarts.school.exception.NumericFieldIsNotPositiveException;
+import ru.hogwarts.school.exception.StringIsBlankException;
 
-import java.util.Map;
+import java.util.function.Supplier;
 
 @Component
-@RequiredArgsConstructor
 public class InputValidator {
 
-    public void checkArgumentIsNull(Object object) {
+    public static void checkArgumentIsNull(Object object) {
         if (object == null) {
             throw new ArgumentIsNullException();
         }
     }
 
-    public void checkObjectStringFieldIsBlank(String fieldName, String fieldValue, Object object) {
+    public static void checkArgumentIsNull(Object object, Supplier<? extends HogwartsException> supplier) {
+        if (object == null) {
+            throw supplier.get();
+        }
+    }
+
+    public static void checkObjectStringFieldIsBlank(String fieldName, String fieldValue, Object object) {
         if (fieldValue.isBlank()) {
             throw new StringIsBlankException(fieldName, object);
         }
     }
 
-    public void checkObjectStringFieldIsBlank(String fieldName, String fieldValue) {
+    public static void checkObjectStringFieldIsBlank(String fieldName, String fieldValue) {
         if (fieldValue.isBlank()) {
             throw new StringIsBlankException(fieldName);
         }
     }
 
-    public void checkObjectNumericFieldIsPositive(String fieldName, int fieldValue, Object object) {
+    public static void checkObjectNumericFieldIsPositive(String fieldName, int fieldValue, Object object) {
         if (fieldValue <= 0) {
             throw new NumericFieldIsNotPositiveException(fieldName, object, fieldValue);
         }
     }
 
-    public void checkObjectNumericFieldIsPositive(String fieldName, int fieldValue) {
+    public static void checkObjectNumericFieldIsPositive(String fieldName, int fieldValue) {
         if (fieldValue <= 0) {
             throw new NumericFieldIsNotPositiveException(fieldName, fieldValue);
         }

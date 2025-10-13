@@ -2,14 +2,15 @@ package ru.hogwarts.school.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.hogwarts.school.exception.RepositoryNotContainsObjectWithIdException;
 import ru.hogwarts.school.model.dto.StudentDto;
 import ru.hogwarts.school.model.entity.Student;
+import ru.hogwarts.school.model.mappers.StudentMapper;
 import ru.hogwarts.school.model.repository.StudentRepository;
 import ru.hogwarts.school.validation.InputValidator;
 import ru.hogwarts.school.validation.RepositoryValidator;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -17,78 +18,61 @@ import java.util.stream.Collectors;
 public class StudentService {
 
     private final StudentRepository studentRepository;
-
-    private final InputValidator inputValidator;
     private final RepositoryValidator repositoryValidator;
 
-    private long count = 1;
-
     public void addStudent(StudentDto studentDto) {
-        inputValidator.checkArgumentIsNull(studentDto);
-        inputValidator.checkObjectStringFieldIsBlank("name", studentDto.getName(), studentDto);
-        inputValidator.checkObjectNumericFieldIsPositive("age", studentDto.getAge(), studentDto);
+        InputValidator.checkArgumentIsNull(studentDto);
+        InputValidator.checkObjectStringFieldIsBlank("name", studentDto.getName(), studentDto);
+        InputValidator.checkObjectNumericFieldIsPositive("age", studentDto.getAge(), studentDto);
         repositoryValidator.checkRepositoryContainsDuplicateObject(
                 studentRepository,
+                Student.class,
                 studentDto,
                 () -> studentRepository.existsByNameAndAge(studentDto.getName(), studentDto.getAge())
         );
 
-        Student newStudent = Student.builder()
-                .name(studentDto.getName())
-                .age(studentDto.getAge())
-                .build();
-
+        Student newStudent = StudentMapper.fromDtoToStudentEntity(studentDto);
         studentRepository.save(newStudent);
     }
 
-    public Optional<Student> removeStudentById(long id) {
-        repositoryValidator.checkRepositoryContainsRequestedKey(studentRepository, id);
-
-        final Optional<Student> removedStudent = studentRepository.findById(id)
-                .map(this::copyStudent);
+    public void removeStudentById(long id) {
         studentRepository.deleteById(id);
-        return removedStudent;
     }
 
     public Student findStudentById(long id) {
-        repositoryValidator.checkRepositoryContainsRequestedKey(studentRepository, id);
-
-        final Student student = studentRepository.findById(id).get();
-
+        final Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new RepositoryNotContainsObjectWithIdException(id));
         return copyStudent(student);
     }
 
-    public StudentDto updateStudent(Student student) {
-        inputValidator.checkArgumentIsNull(student);
-        repositoryValidator.checkRepositoryContainsRequestedKey(studentRepository, student.getId());
-        inputValidator.checkObjectStringFieldIsBlank("name", student.getName(), student);
-        inputValidator.checkObjectNumericFieldIsPositive("age", student.getAge(), student);
+    public StudentDto updateStudent(long id, StudentDto studentDto) {
+        InputValidator.checkArgumentIsNull(studentDto);
+        repositoryValidator.checkRepositoryContainsRequestedKey(studentRepository, id);
+        InputValidator.checkObjectStringFieldIsBlank("name", studentDto.getName(), studentDto);
+        InputValidator.checkObjectNumericFieldIsPositive("age", studentDto.getAge(), studentDto);
 
-        final Student updatedStudent = studentRepository.save(student);
-
-        return StudentDto.builder()
-                .name(updatedStudent.getName())
-                .age(updatedStudent.getAge())
-                .build();
+        final Student updatedStudent = StudentMapper.fromDtoToStudentEntity(studentDto);
+        studentRepository.save(updatedStudent);
+        return studentDto;
     }
 
     public Map<Long, Student> getFiltredByAgeStudentMap(int age) {
-        inputValidator.checkObjectNumericFieldIsPositive("age", age);
+        InputValidator.checkObjectNumericFieldIsPositive("age", age);
 
         final Map<Long, Student> studentMap = studentRepository.findAll()
                 .stream()
                 .filter(s -> s.getAge() == age)
-                .collect(Collectors.toMap(Student::getId, s -> s));
+                .collect(Collectors.toUnmodifiableMap(Student::getId, s -> s));
         return studentMap;
     }
 
     public Map<Long, Student> getFiltredByNameStudentMap(String name) {
-        inputValidator.checkObjectStringFieldIsBlank("name", name);
+        InputValidator.checkObjectStringFieldIsBlank("name", name);
 
         final Map<Long, Student> studentMap = studentRepository.findAll()
                 .stream()
                 .filter(s -> s.getName().equals(name))
-                .collect(Collectors.toMap(Student::getId, s -> s));
+                .collect(Collectors.toUnmodifiableMap(Student::getId, s -> s));
         return studentMap;
     }
 
@@ -96,7 +80,7 @@ public class StudentService {
 
         final Map<Long, Student> studentMap = studentRepository.findAll()
                 .stream()
-                .collect(Collectors.toMap(Student::getId, s -> s));
+                .collect(Collectors.toUnmodifiableMap(Student::getId, s -> s));
         return studentMap;
     }
 

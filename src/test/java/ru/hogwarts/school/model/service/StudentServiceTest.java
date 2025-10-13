@@ -12,6 +12,7 @@ import ru.hogwarts.school.model.entity.Student;
 import ru.hogwarts.school.model.repository.StudentRepository;
 import ru.hogwarts.school.service.StudentService;
 import ru.hogwarts.school.validation.InputValidator;
+import ru.hogwarts.school.validation.RepositoryValidator;
 
 import java.util.HashMap;
 
@@ -23,7 +24,7 @@ public class StudentServiceTest {
 
     @Mock
     private StudentRepository studentRepository;
-    private InputValidator inputValidator;
+    private RepositoryValidator repositoryValidator;
 
     @InjectMocks
     private StudentService studentService;
@@ -36,7 +37,7 @@ public class StudentServiceTest {
     @BeforeEach
     void setStudentService() {
 
-        studentService = new StudentService(new HashMap<>(), new InputValidator());
+        studentService = new StudentService(studentRepository, repositoryValidator);
 
         student1 = new Student("Garry Porter", 22);
         student2 = new Student("Ron Whiskey", 21);
