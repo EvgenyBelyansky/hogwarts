@@ -44,7 +44,7 @@ public class StudentService {
     public Student findStudentById(long id) {
         final Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new RepositoryNotContainsObjectWithIdException(id));
-        return copyStudent(student);
+        return student.clone();
     }
 
     public StudentDto updateStudent(long id, StudentDto studentDto) {
@@ -84,13 +84,5 @@ public class StudentService {
                 .stream()
                 .collect(Collectors.toUnmodifiableMap(Student::getId, s -> s));
         return studentMap;
-    }
-
-    private Student copyStudent(Student student) {
-        Student copy = new Student();
-        copy.setId(student.getId());
-        copy.setName(student.getName());
-        copy.setAge(student.getAge());
-        return copy;
     }
 }

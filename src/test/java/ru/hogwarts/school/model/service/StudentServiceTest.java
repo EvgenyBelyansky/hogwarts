@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.hogwarts.school.BaseTest;
 import ru.hogwarts.school.exception.*;
 import ru.hogwarts.school.model.dto.StudentDto;
 import ru.hogwarts.school.model.entity.Student;
@@ -16,14 +17,10 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-public class StudentServiceTest {
+public class StudentServiceTest extends BaseTest {
 
     @Autowired
     private StudentRepository studentRepository;
-    @Autowired
-    private RepositoryValidator repositoryValidator;
-
     @Autowired
     private StudentService studentService;
 
@@ -172,9 +169,9 @@ public class StudentServiceTest {
 //
 //
     private void addStudents() {
-        studentService.addStudent(studentDto1);
-        studentService.addStudent(studentDto2);
-        studentService.addStudent(studentDto3);
+        studentService.addStudent(new StudentDto("Garry Porter", 22));
+        studentService.addStudent(new StudentDto("Ron Whiskey", 21));
+        studentService.addStudent(new StudentDto("Germiona Grange", 23));
     }
 
 

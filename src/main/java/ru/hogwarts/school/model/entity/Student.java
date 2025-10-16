@@ -11,7 +11,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "student")
-public class Student {
+public class Student implements Cloneable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,5 +53,14 @@ public class Student {
     public void setAge(int age) {
         InputValidator.checkObjectNumericFieldIsPositive("age", age);
         this.age = age;
+    }
+
+    @Override
+    public Student clone() {
+        Student copy = new Student();
+        copy.setId(this.id);
+        copy.setName(this.name);
+        copy.setAge(this.age);
+        return copy;
     }
 }
