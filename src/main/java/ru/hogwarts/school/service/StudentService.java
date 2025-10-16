@@ -36,6 +36,8 @@ public class StudentService {
     }
 
     public void removeStudentById(long id) {
+        repositoryValidator.checkRepositoryContainsRequestedKey(studentRepository, id);
+
         studentRepository.deleteById(id);
     }
 

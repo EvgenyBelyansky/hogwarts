@@ -8,7 +8,6 @@ import ru.hogwarts.school.exception.StringIsBlankException;
 
 import java.util.function.Supplier;
 
-@Component
 public class InputValidator {
 
     public static void checkArgumentIsNull(Object object) {
@@ -23,8 +22,9 @@ public class InputValidator {
         }
     }
 
+
     public static void checkObjectStringFieldIsBlank(String fieldName, String fieldValue, Object object) {
-        if (fieldValue.isBlank()) {
+        if (fieldValue == null || fieldValue.isBlank()) {
             throw new StringIsBlankException(fieldName, object);
         }
     }
