@@ -1,40 +1,39 @@
 package ru.hogwarts.school.model.service;
 
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import ru.hogwarts.school.BaseTest;
+import ru.hogwarts.school.StudentHelper;
 import ru.hogwarts.school.exception.*;
 import ru.hogwarts.school.model.dto.StudentDto;
 import ru.hogwarts.school.model.entity.Student;
 import ru.hogwarts.school.model.repository.StudentRepository;
 import ru.hogwarts.school.service.StudentService;
-import ru.hogwarts.school.validation.RepositoryValidator;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Transactional
 public class StudentServiceTest extends BaseTest {
 
     @Autowired
     private StudentRepository studentRepository;
     @Autowired
     private StudentService studentService;
-
-
-    private final StudentDto studentDto1 = new StudentDto("Garry Porter", 22);
-    private final StudentDto studentDto2 = new StudentDto("Ron Whiskey", 21);
-    private final StudentDto studentDto3 = new StudentDto("Germiona Grange", 23);
-
+    @Autowired
+    private StudentHelper studentHelper;
 
     @Test
     @DisplayName("Принимает дто нового студента, маппером переводит его в энтити и сохратяет в репозиторий")
     void addStudentTest1() {
 
-        StudentDto testStudentDto = studentDto1;
+        studentRepository.deleteAll();
+
+        StudentDto testStudentDto = new StudentDto("Garry Porter", 22);
 
         studentService.addStudent(testStudentDto);
 
@@ -105,7 +104,7 @@ public class StudentServiceTest extends BaseTest {
     @DisplayName("Принимает дто студента с уже имеющимся набором полей (дубль) и выкидывает ошибку")
     void addStudentTest7() {
 
-        studentService.addStudent(studentDto2);
+        studentService.addStudent(new StudentDto("Ron Whiskey", 21));
         StudentDto testStudentDto = new StudentDto("Ron Whiskey", 21);
 
         assertThatThrownBy(() -> studentService.addStudent(testStudentDto))
@@ -116,8 +115,11 @@ public class StudentServiceTest extends BaseTest {
     @DisplayName("Принимает существующий id и успешно удаляет студента с принятым id")
     void removeStudentByIdTest1() {
 
-        addStudents();
-        long testId = 2;
+        final Student student1 = studentHelper.add();
+        final Student student2 = studentHelper.add();
+        final Student student3 = studentHelper.add();
+        long testId = student1.getId();
+
 
         studentService.removeStudentById(testId);
 
@@ -130,37 +132,44 @@ public class StudentServiceTest extends BaseTest {
     @DisplayName("Принимает несуществующий в бд id и выбрасывает ошибку")
     void removeStudentByIdTest2() {
 
-        addStudents();
-        long testId = 5;
+        final Student student1 = studentHelper.add();
+        final Student student2 = studentHelper.add();
+        final Student student3 = studentHelper.add();
+        long testId = student3.getId() + 20;
 
         assertThat(studentService.getAllStudents()).doesNotContainKey(testId);
         assertThatThrownBy(() -> studentService.removeStudentById(testId))
                 .isInstanceOf(RepositoryNotContainsObjectWithIdException.class)
                 .hasMessageContaining(String.valueOf(testId));
     }
-//
+
     @Test
     @DisplayName("Принимает существующий id и успешно возвращает копию студента с принятым id")
     void findStudentByIdTest1() {
 
-        addStudents();
-        long testId = 2;
+        final Student student1 = studentHelper.add();
+        final Student student2 = studentHelper.add();
+        final Student student3 = studentHelper.add();
+        long testId = student1.getId();
         Student returnedStudent = studentService.findStudentById(testId);
 
-        assertThat(returnedStudent.getName()).isEqualTo(studentDto2.getName());
-        assertThat(returnedStudent.getAge()).isEqualTo(studentDto2.getAge());
+        assertThat(returnedStudent.getName()).isEqualTo(student1.getName());
+        assertThat(returnedStudent.getAge()).isEqualTo(student1.getAge());
     }
 
     @Test
     @DisplayName("Принимает несуществующий id и выбрасывает ошибку")
     void findStudentByIdTest2() {
 
-        addStudents();
-        long testId = 5;
+        final Student student1 = studentHelper.add();
+        final Student student2 = studentHelper.add();
+        final Student student3 = studentHelper.add();
+        long testId = student3.getId() + 20;
 
         assertThatThrownBy(() -> studentService.findStudentById(testId))
                 .isInstanceOf(RepositoryNotContainsObjectWithIdException.class);
     }
+
 //
 //    @Test
 //    @DisplayName("")
@@ -168,11 +177,11 @@ public class StudentServiceTest extends BaseTest {
 //    }
 //
 //
-    private void addStudents() {
-        studentService.addStudent(new StudentDto("Garry Porter", 22));
-        studentService.addStudent(new StudentDto("Ron Whiskey", 21));
-        studentService.addStudent(new StudentDto("Germiona Grange", 23));
-    }
+//    private void addStudents() {
+//        studentService.addStudent(new StudentDto("Garry Porter", 22));
+//        studentService.addStudent(new StudentDto("Ron Whiskey", 21));
+//        studentService.addStudent(new StudentDto("Germiona Grange", 23));
+//    }
 
 
 }

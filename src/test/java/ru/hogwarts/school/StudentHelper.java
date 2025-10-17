@@ -1,8 +1,6 @@
 package ru.hogwarts.school;
 
-import com.github.javafaker.Faker;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.hogwarts.school.model.entity.Student;
 import ru.hogwarts.school.model.repository.StudentRepository;
@@ -10,10 +8,13 @@ import ru.hogwarts.school.model.repository.StudentRepository;
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 
 @Component
-@RequiredArgsConstructor
-public class StudentHelper implements TestHelper<Student>{
+public class StudentHelper extends TestHelper<Student> {
 
-    private final StudentRepository studentRepository;
+
+    @Autowired
+    public StudentHelper(StudentRepository studentRepository) {
+        super(studentRepository::save);
+    }
 
     public static Student.StudentBuilder createBuilder() {
         return Student.builder()
@@ -26,7 +27,4 @@ public class StudentHelper implements TestHelper<Student>{
         return createBuilder().build();
     }
 
-    public JpaRepository<Student, ?> getRepository() {
-        return studentRepository;
-    }
 }

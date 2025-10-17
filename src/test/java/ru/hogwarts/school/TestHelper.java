@@ -1,23 +1,28 @@
 package ru.hogwarts.school;
 
 import com.github.javafaker.Faker;
-import lombok.Builder;
-import org.springframework.data.jpa.repository.JpaRepository;
-import ru.hogwarts.school.model.entity.Student;
 
-public interface TestHelper<T> {
+import java.util.function.Function;
 
-    Faker faker = new Faker();
+public abstract class TestHelper<T> {
 
-    T create();
+    protected final Function<T, T> saveFunction;
 
-    default T save(T t){
-       return getRepository().save(t);
+    static Faker faker = new Faker();
+
+    public TestHelper(Function<T, T> saveFunction) {
+        this.saveFunction = saveFunction;
     }
 
-    default T add() {
+    public T create() {
+        return null;
+    }
+
+    public T save(T t){
+       return this.saveFunction.apply(t);
+    }
+
+    public T add() {
         return save(create());
     }
-
-    JpaRepository<T, ?> getRepository();
 }

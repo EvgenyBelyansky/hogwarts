@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.hogwarts.school.model.entity.Faculty;
 import ru.hogwarts.school.model.entity.Student;
+import ru.hogwarts.school.model.repository.FacultyRepository;
+import ru.hogwarts.school.model.repository.StudentRepository;
 
 @SpringBootTest
 public abstract class BaseTest {
