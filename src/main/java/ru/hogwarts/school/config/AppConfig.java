@@ -2,8 +2,8 @@ package ru.hogwarts.school.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.hogwarts.school.model.Faculty;
-import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.model.entity.Faculty;
+import ru.hogwarts.school.model.entity.Student;
 
 import java.util.HashMap;
 
