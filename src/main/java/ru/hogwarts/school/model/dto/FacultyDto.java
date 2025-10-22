@@ -7,6 +7,7 @@ import ru.hogwarts.school.validation.InputValidator;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@ToString
 public class FacultyDto {
 
     private String name;

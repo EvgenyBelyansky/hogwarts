@@ -5,8 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.dto.FacultyDto;
 import ru.hogwarts.school.model.entity.Faculty;
+import ru.hogwarts.school.model.entity.Student;
 import ru.hogwarts.school.service.FacultyService;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -39,12 +41,17 @@ public class FacultyController {
     }
 
     @GetMapping("/by-color")
-    public Map<Long, Faculty> getFacultyByColor(String color) {
+    public List<Faculty> getFacultyByColor(@RequestParam String color) {
         return facultyService.getFiltredByColorFacultyMap(color);
     }
 
     @GetMapping("/get/all")
     public Map<Long, Faculty> getAllFaculty() {
         return facultyService.getAllFaculty();
+    }
+
+    @GetMapping("/students")
+    public List<Student> getStudentsInFacultyById(@RequestParam long id) {
+        return facultyService.getStudentsInFacultyById(id);
     }
 }

@@ -1,10 +1,7 @@
 package ru.hogwarts.school.validation;
 
 import org.springframework.stereotype.Component;
-import ru.hogwarts.school.exception.ArgumentIsNullException;
-import ru.hogwarts.school.exception.HogwartsException;
-import ru.hogwarts.school.exception.NumericFieldIsNotPositiveException;
-import ru.hogwarts.school.exception.StringIsBlankException;
+import ru.hogwarts.school.exception.*;
 
 import java.util.function.Supplier;
 
@@ -38,6 +35,12 @@ public class InputValidator {
     public static void checkObjectNumericFieldIsPositive(String fieldName, int fieldValue, Object object) {
         if (fieldValue <= 0) {
             throw new NumericFieldIsNotPositiveException(fieldName, object, fieldValue);
+        }
+    }
+
+    public static void checkObjectNumericFieldIsNotBeNegative(String fieldName, int fieldValue) {
+        if (fieldValue < 0) {
+            throw new NumericFieldIsNegativeException(fieldName, fieldValue);
         }
     }
 

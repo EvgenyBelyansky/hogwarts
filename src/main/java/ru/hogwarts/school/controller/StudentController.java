@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.dto.StudentDto;
+import ru.hogwarts.school.model.entity.Faculty;
 import ru.hogwarts.school.model.entity.Student;
 import ru.hogwarts.school.service.StudentService;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -38,18 +40,21 @@ public class StudentController {
         return studentService.updateStudent(id, studentDto);
     }
 
-    @GetMapping("/by-age")
-    public Map<Long, Student> getStudentsByAge(@RequestParam int age) {
-        return studentService.getFiltredByAgeStudentMap(age);
-    }
-
-    @GetMapping("/by-name")
-    public Map<Long, Student> getStudentsByName(@RequestParam String name) {
-        return studentService.getFiltredByNameStudentMap(name);
-    }
-
     @GetMapping("/get/all")
     public Map<Long, Student> getAllStudents() {
         return studentService.getAllStudents();
+    }
+
+    @GetMapping("/filter")
+    public List<Student> findStudentByFilter(@RequestParam(required = false) int age,
+                                             @RequestParam(required = false) int maxAge,
+                                             @RequestParam(required = false) String name) {
+
+        return studentService.findStudentByFilter(age, maxAge, name);
+    }
+
+    @GetMapping("/faculty")
+    public Faculty getStudentFacultyById(@RequestParam long id) {
+        return studentService.getStudentFacultyById(id);
     }
 }

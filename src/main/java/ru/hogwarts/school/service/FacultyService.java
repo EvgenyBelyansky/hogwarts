@@ -3,6 +3,7 @@ package ru.hogwarts.school.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.exception.RepositoryNotContainsObjectWithIdException;
+import ru.hogwarts.school.model.entity.Student;
 import ru.hogwarts.school.model.mappers.FacultyMapper;
 import ru.hogwarts.school.model.dto.FacultyDto;
 import ru.hogwarts.school.model.entity.Faculty;
@@ -10,6 +11,7 @@ import ru.hogwarts.school.model.repository.FacultyRepository;
 import ru.hogwarts.school.validation.InputValidator;
 import ru.hogwarts.school.validation.RepositoryValidator;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -18,7 +20,7 @@ import java.util.stream.Collectors;
 public class FacultyService {
 
     private final FacultyRepository facultyRepository;
-    private RepositoryValidator repositoryValidator;
+    private final RepositoryValidator repositoryValidator;
 
 
     public void addFaculty(FacultyDto facultyDto) {
@@ -57,17 +59,21 @@ public class FacultyService {
         facultyRepository.save(updatedFaculty);
     }
 
-    public Map<Long, Faculty> getFiltredByColorFacultyMap(String color) {
+    public List<Faculty> getFiltredByColorFacultyMap(String color) {
         InputValidator.checkObjectStringFieldIsBlank("color", color);
 
-        return facultyRepository.findAll().stream()
-                .filter(f -> f.getColor().equals(color))
-                .collect(Collectors.toUnmodifiableMap(Faculty::getId, f -> f));
+        return List.copyOf(facultyRepository.findFacultiesByColorContainingIgnoreCase(color));
     }
 
     public Map<Long, Faculty> getAllFaculty() {
 
         return facultyRepository.findAll().stream()
                 .collect(Collectors.toUnmodifiableMap(Faculty::getId, f -> f));
+    }
+
+    public List<Student> getStudentsInFacultyById(long id) {
+        return List.copyOf(facultyRepository.findById(id)
+                .orElseThrow(() -> new RepositoryNotContainsObjectWithIdException(id))
+                .getStudents());
     }
 }

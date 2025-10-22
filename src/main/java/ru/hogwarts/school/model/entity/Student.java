@@ -23,10 +23,15 @@ public class Student implements Cloneable {
     @Column(name = "age")
     private int age;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "faculty_id")
+    private Faculty faculty;
+
     @Builder
-    public Student(String name, int age) {
+    public Student(String name, int age, Faculty faculty) {
         this.name = Objects.requireNonNull(name);
         this.age = Objects.requireNonNull(age);
+        this.faculty = Objects.requireNonNull(faculty);
     }
 
     @Override

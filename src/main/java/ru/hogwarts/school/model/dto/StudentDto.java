@@ -6,6 +6,7 @@ import ru.hogwarts.school.validation.InputValidator;
 import java.util.Objects;
 
 @Getter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -13,6 +14,7 @@ public class StudentDto {
 
     private String name;
     private int age;
+    private long facultyId;
 
     public void setName(String name) {
         InputValidator.checkObjectStringFieldIsBlank("name", name);
@@ -23,6 +25,8 @@ public class StudentDto {
         InputValidator.checkObjectNumericFieldIsPositive("age", age);
         this.age = age;
     }
+
+
 
     @Override
     public boolean equals(Object object) {

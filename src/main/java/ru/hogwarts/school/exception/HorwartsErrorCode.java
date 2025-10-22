@@ -10,5 +10,7 @@ public enum HorwartsErrorCode {
 
     ARGUMENT_IS_NOT_POSITIVE,
 
+    ARGUMENT_IS_NEGATIVE,
+
     OBJECT_IS_DUPLICATE
 }

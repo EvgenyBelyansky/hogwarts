@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import ru.hogwarts.school.validation.InputValidator;
 
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -22,6 +23,10 @@ public class Faculty {
 
     @Column(name = "color")
     private String color;
+
+    @OneToMany(fetch = FetchType.LAZY,
+            mappedBy = "faculty")
+    private List<Student> students;
 
     @Builder
     public Faculty(String name, String color) {
